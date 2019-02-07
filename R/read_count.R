@@ -1,32 +1,58 @@
-read_count <-
-function (filetype, path, out_dir, type, genelen) 
-{
-    if(filetype == "csv") {
-        raw_count = read.csv(path, header = TRUE, row.names = 1)
-    }else if(filetype == "txt") {
-        raw_count = read.table(path, header = TRUE, row.names = 1)
-    }else if(filetype == "rds") {
-        raw_count = readRDS(path)
-    }else{
-        print("filetype can be 'csv', 'txt', or 'rds'!")
-        stop()
+#' @title read_count_data
+#' @description FUNCTION_DESCRIPTION
+#' @param countdata PARAM_DESCRIPTION
+#' @param type PARAM_DESCRIPTION
+#' @param genelen PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
+#' }
+#' @importFrom data.table fread
+#' @importFrom magrittr "%>%"
+#' @importFrom glue glue
+#' @rdname read_count
+#' @export
+read_count <- function(countdata,
+                       type,
+                       genelen) {
+  if (is.character(countdata)) {
+    datExpr <- fread(countdata, data.table = FALSE) %>% as.matrix()
+  } else {
+    datExpr <- countdata %>% as.matrix()
+  }
+
+  message(glue("number of genes in raw count matrix {nrow(datExpr)}"))
+  message(glue("number of cells in raw count matrix {ncol(datExpr)}"))
+
+  if (!is.integer(datExpr)) { # if the matrix has integer counts, it is probably raw data, otherwise, probably TPM
+    if (length(genelen) != nrow(datExpr)) {
+      stop("number of genes in 'genelen' and count matrix do not match!")
     }
-    raw_count = as.matrix(raw_count)
-    print(paste("number of genes in raw count matrix", nrow(raw_count)))
-    print(paste("number of cells in raw count matrix", ncol(raw_count)))
-    
-    if(type == "TPM"){
-      if(length(genelen) != nrow(raw_count)) stop("number of genes in 'genelen' and count matrix do not match! ")
-      raw_count = sweep(raw_count, 1, genelen, FUN = "*")
-    }
-    
-    totalCounts_by_cell = colSums(raw_count)
-    saveRDS(totalCounts_by_cell, file = paste0(out_dir, "totalCounts_by_cell.rds"))
-    totalCounts_by_cell[totalCounts_by_cell == 0] = 1
-    raw_count = sweep(raw_count, MARGIN = 2, 10^6/totalCounts_by_cell, FUN = "*")
-    if (min(raw_count) < 0) {
-        stop("smallest read count cannot be negative!")
-    }
-    count_lnorm = log10(raw_count + 1.01)
-    return(count_lnorm)
+    # multiply each gene count by its gene length
+    datExpr <- sweep(
+      x = datExpr,
+      MARGIN = 1,
+      STATS = genelen,
+      FUN = "*"
+    )
+  }
+
+  totalCounts_by_cell <- colSums(datExpr)
+
+  totalCounts_by_cell[totalCounts_by_cell == 0] <- 1
+  datExpr <- sweep(
+    x = datExpr,
+    MARGIN = 2,
+    STATS = 10^6 / totalCounts_by_cell,
+    FUN = "*"
+  )
+  if (min(datExpr) < 0) {
+    stop("Smallest read count cannot be negative!")
+  }
+  count_lnorm <- log10(datExpr + 1.01)
+  return(count_lnorm)
 }
