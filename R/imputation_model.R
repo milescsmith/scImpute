@@ -489,7 +489,7 @@ imputation_model <- function(count,
       } else {
         dlist = dist_cells[cells, cells]
       }
-      subres <- future_map_dfc(.x = 1:Jc, 
+      subres <- future_map(.x = 1:Jc, 
                                .progress = TRUE, 
                                .f = impute_values,
                                num_cells = Jc,
