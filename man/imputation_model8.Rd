@@ -4,7 +4,7 @@
 \alias{imputation_model8}
 \title{imputation_model8}
 \usage{
-imputation_model8(count, labeled, point, drop_thre = 0.5,
+imputation_model8(count, labeled = FALSE, point, drop_threshold = 0.5,
   Kcluster = 10)
 }
 \arguments{
@@ -14,7 +14,7 @@ imputation_model8(count, labeled, point, drop_thre = 0.5,
 
 \item{point}{PARAM_DESCRIPTION}
 
-\item{drop_thre}{PARAM_DESCRIPTION, Default: 0.5}
+\item{drop_threshold}{PARAM_DESCRIPTION, Default: 0.5}
 
 \item{Kcluster}{PARAM_DESCRIPTION, Default: 10}
 }

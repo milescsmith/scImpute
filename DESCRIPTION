@@ -14,13 +14,10 @@ Depends: R (>= 3.5),
   kernlab, 
   rsvd,
   magrittr,
-  parallel,
   future,
   furrr,
   purrr,
   data.table,
-  doFuture,
-  doRNG,
   glue,
   dplyr
 License: GPL

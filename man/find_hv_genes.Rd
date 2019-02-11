@@ -4,7 +4,7 @@
 \alias{find_hv_genes}
 \title{find_hv_genes}
 \usage{
-find_hv_genes(count, I, J, plan = "multiprocess")
+find_hv_genes(count, I)
 }
 \arguments{
 \item{count}{PARAM_DESCRIPTION}
@@ -12,8 +12,6 @@ find_hv_genes(count, I, J, plan = "multiprocess")
 \item{I}{PARAM_DESCRIPTION}
 
 \item{J}{PARAM_DESCRIPTION}
-
-\item{plan}{Default: "multiprocess"}
 }
 \value{
 OUTPUT_DESCRIPTION

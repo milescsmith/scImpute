@@ -6,7 +6,6 @@
 #' @param Kcluster PARAM_DESCRIPTION, Default: NULL
 #' @param labels PARAM_DESCRIPTION, Default: NULL
 #' @param genelen PARAM_DESCRIPTION, Default: NULL
-#' @param plan PARAM_DESCRIPTION, Default: "multiprocess"
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
@@ -22,8 +21,7 @@ scimpute <- function(datExpr,
                      drop_thre = 0.5, 
                      Kcluster = NULL, 
                      labels = NULL, 
-                     genelen = NULL, 
-                     plan = "multiprocess") {
+                     genelen = NULL) {
     
     if (is.null(labels) & is.null(Kcluster)) {
       stop("'Kcluster' must be specified when no labels are provided.")

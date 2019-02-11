@@ -5,7 +5,7 @@
 \title{FUNCTION_TITLE}
 \usage{
 scimpute(datExpr, type = "count", drop_thre = 0.5, Kcluster = NULL,
-  labels = NULL, genelen = NULL, plan = "multiprocess")
+  labels = NULL, genelen = NULL)
 }
 \arguments{
 \item{datExpr}{PARAM_DESCRIPTION}
@@ -19,8 +19,6 @@ scimpute(datExpr, type = "count", drop_thre = 0.5, Kcluster = NULL,
 \item{labels}{PARAM_DESCRIPTION, Default: NULL}
 
 \item{genelen}{PARAM_DESCRIPTION, Default: NULL}
-
-\item{plan}{PARAM_DESCRIPTION, Default: "multiprocess"}
 }
 \value{
 OUTPUT_DESCRIPTION

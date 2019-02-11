@@ -5,7 +5,7 @@
 \title{imputation_wlabel_model8}
 \usage{
 imputation_wlabel_model8(count, labeled, cell_labels = NULL, point,
-  drop_thre, Kcluster = NULL)
+  drop_threshold, Kcluster = NULL)
 }
 \arguments{
 \item{count}{PARAM_DESCRIPTION}
@@ -16,7 +16,7 @@ imputation_wlabel_model8(count, labeled, cell_labels = NULL, point,
 
 \item{point}{PARAM_DESCRIPTION}
 
-\item{drop_thre}{PARAM_DESCRIPTION}
+\item{drop_threshold}{PARAM_DESCRIPTION}
 
 \item{Kcluster}{PARAM_DESCRIPTION, Default: NULL}
 }

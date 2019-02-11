@@ -5,7 +5,7 @@
 \title{find_neighbors}
 \usage{
 find_neighbors(count_hv, labeled, J, Kcluster = NULL,
-  plan = "multiprocess", cell_labels = NULL)
+  cell_labels = NULL)
 }
 \arguments{
 \item{count_hv}{PARAM_DESCRIPTION}
@@ -15,8 +15,6 @@ find_neighbors(count_hv, labeled, J, Kcluster = NULL,
 \item{J}{PARAM_DESCRIPTION}
 
 \item{Kcluster}{PARAM_DESCRIPTION, Default: NULL}
-
-\item{plan}{PARAM_DESCRIPTION, Default: "multiprocess"}
 
 \item{cell_labels}{PARAM_DESCRIPTION, Default: NULL}
 }

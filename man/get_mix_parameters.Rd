@@ -4,14 +4,12 @@
 \alias{get_mix_parameters}
 \title{get_mix_parameters}
 \usage{
-get_mix_parameters(count, point = log10(1.01), plan = "multiprocess")
+get_mix_parameters(count, point = log10(1.01))
 }
 \arguments{
 \item{count}{PARAM_DESCRIPTION}
 
 \item{point}{PARAM_DESCRIPTION, Default: log10(1.01)}
-
-\item{plan}{Default: "multiprocess"}
 }
 \value{
 OUTPUT_DESCRIPTION

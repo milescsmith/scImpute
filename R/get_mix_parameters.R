@@ -111,7 +111,6 @@ get_mix <- function(xdata, point) {
 #' @description FUNCTION_DESCRIPTION
 #' @param count PARAM_DESCRIPTION
 #' @param point PARAM_DESCRIPTION, Default: log10(1.01)
-#' @param plan Default: "multiprocess"
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
 #' @examples
