@@ -115,31 +115,23 @@ find_neighbors <- function(count_hv,
     })
     
     return(list(dist_list = dist_list, clust = clust))
-  }
-  
-  if (labeled == FALSE) {
+  } else if (labeled == FALSE) {
     ## dimensional reduction
     message("dimensional reduction...")
     if (J < 5000) {
-      npc <- dimReduc(threshold = 0.4,
+      mat_pcs <- dimReduc(threshold = 0.4,
                       count_mat = count_hv,
                       is_labeled = labeled,
                       clusters = Kcluster,
                       scale = FALSE)
     } else {
-      npc <- dimReduc(threshold = 0.6,
+      mat_pcs <- dimReduc(threshold = 0.6,
                       count_mat = count_hv,
                       is_labeled = labeled,
                       clusters = Kcluster,
                       k = 1000,
                       scale = FALSE)
     }
-    
-    if (npc < 3) {
-      npc <- 3
-    }
-    
-    mat_pcs <- t(pca$x[, 1:npc]) # columns are cells
     
     ## detect outliers
     message("calculating cell distances...")
@@ -359,7 +351,7 @@ imputation_wlabel_model8 <- function(count,
 }
 
 
-#' Title
+#' imputation_model
 #'
 #' @param count 
 #' @param point 
@@ -453,59 +445,63 @@ imputation_model <- function(count,
   # mixture model
   nclust <- sum(!is.na(unique(clust)))
   
-  
-  cells <- which(clust == cc)
-  message("searching for valid genes...")
-  valid_genes <- find_va_genes(parslist, subcount = count[, cells])
-  
-  if (length(cells) > 1 & length(valid_genes) > 10) {
-    subcount <- count[valid_genes, cells, drop = FALSE]
-    Ic <- length(valid_genes)
-    Jc <- ncol(subcount)
-    parslist <- parslist[valid_genes, , drop = FALSE]
+  for(cc in 1:nclust){
+    print(glue("estimating dropout probability for cluster {cc}..."))
+    cells <- which(clust == cc)
+    parslist <- get_mix_parameters(count = count[,cells, drop = FALSE],
+                                   point = log10(1.01))
     
-    droprate <- t(future_map_dfc(1:Ic, function(i) {
-      wt <- calculate_weight(subcount[i, ], parslist[i, ])
-      return(wt[, 1])
-    }))
+    message("searching for valid genes...")
+    valid_genes <- find_va_genes(parslist, subcount = count[, cells])
     
-    mucheck <- sweep(subcount, 
-                     MARGIN = 1, 
-                     parslist[, "mu"], 
-                     FUN = ">")
-    
-    droprate[mucheck & droprate > drop_threshold] <- 0
-    
-    # dropouts
-    setA <- future_map(1:Jc, function(cellid) {
-      which(droprate[, cellid] > drop_threshold)
-    })
-    
-    # non-dropouts
-    setB <- future_map(1:Jc, function(cellid) {
-      which(droprate[, cellid] <= drop_threshold)
-    })
-    
-    # imputation
-    message(glue("imputing dropout values for cluster {cc}..."))
-    if (isTRUE(labeled)){
-      dlist = dist_list[[cc]]
-    } else {
-      dlist = dist_list[cells, cells]
+    if (length(cells) > 1 & length(valid_genes) > 10) {
+      subcount <- count[valid_genes, cells, drop = FALSE]
+      Ic <- length(valid_genes)
+      Jc <- ncol(subcount)
+      parslist <- parslist[valid_genes, , drop = FALSE]
+      
+      droprate <- t(future_map_dfc(1:Ic, function(i) {
+        wt <- calculate_weight(subcount[i, ], parslist[i, ])
+        return(wt[, 1])
+      }))
+      
+      mucheck <- sweep(subcount, 
+                       MARGIN = 1, 
+                       parslist[, "mu"], 
+                       FUN = ">")
+      
+      droprate[mucheck & droprate > drop_threshold] <- 0
+      
+      # dropouts
+      setA <- future_map(1:Jc, function(cellid) {
+        which(droprate[, cellid] > drop_threshold)
+      })
+      
+      # non-dropouts
+      setB <- future_map(1:Jc, function(cellid) {
+        which(droprate[, cellid] <= drop_threshold)
+      })
+      
+      # imputation
+      message(glue("imputing dropout values for cluster {cc}..."))
+      if (isTRUE(labeled)){
+        dlist = dist_list[[cc]]
+      } else {
+        dlist = dist_cells[cells, cells]
+      }
+      subres <- future_map_dfc(.x = 1:Jc, 
+                               .progress = TRUE, 
+                               .f = impute_values,
+                               num_cells = Jc,
+                               num_genes = Ic,
+                               subcount = subcount,
+                               droprate = droprate,
+                               dropouts = setA,
+                               non_dropouts = setB,
+                               dist_list = dlist)
+      count_imp[valid_genes, cells] <- subres
     }
-    subres <- future_map_dfc(.x = 1:Jc, 
-                             .progress = TRUE, 
-                             .f = impute_values,
-                             num_cells = Jc,
-                             num_genes = Ic,
-                             subcount = subcount,
-                             droprate = droprate,
-                             dropouts = setA,
-                             non_dropouts = setB,
-                             dist_list = dlist)
-    count_imp[valid_genes, cells] <- subres
   }
-  
   if (isTRUE(labeled)){
     outlier <- integer(0)
   } else {
@@ -542,11 +538,17 @@ dimReduc <- function(threshold,
     npc <- length(var_cum)
   } else {
     npc <- which.max(var_cum > threshold)
-    if (labeled == FALSE) {
+    if (is_labeled == FALSE) {
       npc <- max(npc, clusters)
     }
   }
-  return(npc)
+  
+  if (npc < 3) {
+    npc <- 3
+  }
+  
+  mat_pcs <- t(pca$x[, 1:npc]) # columns are cells
+  return(mat_pcs)
 }
 
 #' impute_values
