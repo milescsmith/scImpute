@@ -2,63 +2,37 @@
 % Please edit documentation in R/scimpute.R
 \name{scimpute}
 \alias{scimpute}
-\title{use scImpute to impute dropout values in scRNA-seq data}
+\title{FUNCTION_TITLE}
 \usage{
-scimpute(count_path, infile = "csv", outfile = "csv", type = "count",
-  out_dir, labeled = FALSE, drop_thre = 0.5, Kcluster = NULL,
-  labels = NULL, genelen = NULL, ncores = 5)
+scimpute(datExpr, type = "count", drop_thre = 0.5, Kcluster = NULL,
+  labels = NULL, genelen = NULL)
 }
 \arguments{
-\item{count_path}{A character specifying the full path of the raw count matrix;}
+\item{datExpr}{PARAM_DESCRIPTION}
 
-\item{infile}{A character specifying the type of file storing the raw count matrix;
-can be "csv", "txt", or "rds". The input file shoule have rows representing genes and
-columns representing cells, with its first row as cell names 
-and first column as gene names.}
+\item{type}{PARAM_DESCRIPTION, Default: 'count'}
 
-\item{outfile}{A character specifying the type of file storing the imputed count matrix;
-can be "csv", "txt", or "rds".}
+\item{drop_thre}{PARAM_DESCRIPTION, Default: 0.5}
 
-\item{type}{A character specifying the type of values in the expression matrix. 
-Can be "count" (default) or "TPM".}
+\item{Kcluster}{PARAM_DESCRIPTION, Default: NULL}
 
-\item{out_dir}{A character specifying the full path of the output directory, 
-which is used to store all intermdediate and final outputs.}
+\item{labels}{PARAM_DESCRIPTION, Default: NULL}
 
-\item{labeled}{A logical value indicating whether cell type information is available.
-\code{labels} must be specified if \code{labeled = TRUE}.}
-
-\item{drop_thre}{A number between 0 and 1, 
-specifying the threshold to determine dropout values.}
-
-\item{Kcluster}{An integer specifying the number of cell subpopulations. 
-This parameter can be determined based on prior knowledge or clustering of raw data.
-\code{Kcluster} is used to determine the candidate neighbors of each cell.}
-
-\item{labels}{A character vector specifying the cell type of 
-each column in the raw count matrix. Only needed when \code{labeled = TRUE}.
-Each cell type should have at least two cells for imputation.}
-
-\item{genelen}{An integer vector giving the length of each gene. 
-Order must match the gene orders in the expression matrix.
-\code{genelen} must be specified if \code{type = "count"}.}
-
-\item{ncores}{A integer specifying the number of cores used for parallel computation.}
+\item{genelen}{PARAM_DESCRIPTION, Default: NULL}
 }
 \value{
-scImpute returns a vector giving the column indices of outlier cells.
-It saves the imputed count matrix to scimpute_count.csv, scimpute_count.txt, or scimpute_count.rds 
-(depending on \code{outfile}) to \code{out_dir}.
+OUTPUT_DESCRIPTION
 }
 \description{
-use scImpute to impute dropout values in scRNA-seq data
+FUNCTION_DESCRIPTION
 }
-\references{
-Li, W. V., & Li, J. J. (2018). An accurate and robust imputation method 
-scImpute for single-cell RNA-seq data. \emph{Nature Communications}, 9(1), 997.
+\details{
+DETAILS
 }
-\author{
-Wei Vivian Li, \email{liw@ucla.edu}
-
-Jingyi Jessica Li, \email{jli@stat.ucla.edu}
+\examples{
+\dontrun{
+if (interactive()) {
+  # EXAMPLE1
+}
+}
 }
