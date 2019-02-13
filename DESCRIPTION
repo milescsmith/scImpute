@@ -18,9 +18,7 @@ Depends: R (>= 3.5),
   purrr,
   data.table,
   glue,
-  dplyr,
-  oem,
-  progress
+  dplyr
 License: GPL
 RoxygenNote: 6.1.1
 Suggests: knitr,
