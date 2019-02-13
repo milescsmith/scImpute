@@ -279,7 +279,7 @@ impute_nnls <- function(Ic,
   
   yimpute[geneid_obs] <- yobs[geneid_obs]
   
-  maxobs <- future_map(subcount, 1, max)
+  maxobs <- pmap(subcount, max)
   
   yimpute[yimpute > maxobs] <- maxobs[yimpute > maxobs]
   
@@ -473,12 +473,14 @@ imputation_model <- function(count,
       droprate[mucheck & droprate > drop_threshold] <- 0
       
       # dropouts
-      setA <- future_map(1:Jc, function(cellid) {
+      message("Calcuating dropouts...")
+      setA <- future_map(1:Jc, .progress = TRUE, function(cellid) {
         which(droprate[, cellid] > drop_threshold)
       })
       
       # non-dropouts
-      setB <- future_map(1:Jc, function(cellid) {
+      message("Calcuating non-dropouts...")
+      setB <- future_map(1:Jc, .progress = TRUE, function(cellid) {
         which(droprate[, cellid] <= drop_threshold)
       })
       
@@ -489,17 +491,24 @@ imputation_model <- function(count,
       } else {
         dlist = dist_cells[cells, cells]
       }
+      # pb <- progress_bar$new(
+      #   format = " imputing :current [:bar] :percent elapsed :elapsed eta: :eta",
+      #   total = Jc,
+      #   clear = FALSE)
+      # pb$tick(0)
       subres <- future_map(.x = 1:Jc, 
-                               .progress = TRUE, 
-                               .f = impute_values,
-                               num_cells = Jc,
-                               num_genes = Ic,
-                               subcount = subcount,
-                               droprate = droprate,
-                               dropouts = setA,
-                               non_dropouts = setB,
-                               dist_list = dlist)
-      count_imp[valid_genes, cells] <- subres
+                    .progress = TRUE,
+                    .f = impute_values,
+                    num_cells = Jc,
+                    num_genes = Ic,
+                    subcount = subcount,
+                    droprate = droprate,
+                    dropouts = setA,
+                    non_dropouts = setB,
+                    dist_list = dlist)
+                    # ,
+                    # prog_bar = pb)
+      count_imp[valid_genes, cells] <- subres %>% as.data.frame() %>% as.matrix()
     }
   }
   if (isTRUE(labeled)){
@@ -574,10 +583,12 @@ impute_values <- function(cellid,
                           dropouts,
                           dist_list,
                           non_dropouts){
+  
   if (cellid %% 100 == 0) {
     print(cellid)
   }
-  nbs <- which(!1:num_cells %in% cellid)
+  nbs <- which(!1:num_cells != cellid)
+  # prog_bar$tick()
   if (length(nbs) != 0) {
     y <- try(impute_nnls(num_genes,
                          cellid = cellid, 
